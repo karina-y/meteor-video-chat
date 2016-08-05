@@ -1,3 +1,4 @@
+
 renderCallTemplate = function(template) {
     Session.set("currentPhoneCall", null);
     Session.set("phoneIsRinging", false);

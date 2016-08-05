@@ -13,7 +13,15 @@ navigator.sayswho= (function(){
     if((tem= ua.match(/version\/(\d+)/i))!= null) M.splice(1, 1, tem[1]);
     return M[0];
 })();
-  
+  //RTCPeerConnection
+window.RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection ||
+            window.webkitRTCPeerConnection || window.msRTCPeerConnection;
+//getUserMedia
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
+                       navigator.mozGetUserMedia || navigator.msGetUserMedia;
+//SessionDescription
+window.SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription ||
+                            window.webkitRTCSessionDescription || msSessionDescription;
   
   
   VideoCallServices = new class {
