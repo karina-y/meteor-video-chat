@@ -161,7 +161,7 @@ renderCallTemplate = function(template) {
 
 
                         Meteor.VideoCallServices.peerConnection.addIceCandidate(
-                            new RTCIceCandidate(JSON.parse(ice.string)),
+                            new RTCIceCandidate(ice.msg),
                             function() {
 
                             },
@@ -227,7 +227,7 @@ renderCallTemplate = function(template) {
                         const ice = message.fields.ice_caller;
                         console.log("loadingIce", message);
                         Meteor.VideoCallServices.peerConnection.addIceCandidate(
-                            new RTCIceCandidate(JSON.parse(ice)));
+                            new RTCIceCandidate(ice.msg));
 
                     }
                 }
