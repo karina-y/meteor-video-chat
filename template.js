@@ -174,7 +174,7 @@ renderCallTemplate = function(template) {
 
                     if (message.fields.SDP_callee != undefined) {
                         console.log("sdp_callee");
-                        Meteor.VideoCallServices.peerConnection.setRemoteDescription(new RTCSessionDescription(
+                        Meteor.VideoCallServices.peerConnection.setRemoteDescription(new SessionDescription(
                             JSON.parse(message.fields.SDP_callee)
                         ), function() {}, function() {})
 
@@ -205,7 +205,7 @@ renderCallTemplate = function(template) {
                         if (message.fields.status == currentPhoneCall.caller_id)
                             Meteor.VideoCallServices.callTerminated();
                     if (message.fields.SDP_caller != undefined) {
-                        Meteor.VideoCallServices.peerConnection.setRemoteDescription(new RTCSessionDescription(
+                        Meteor.VideoCallServices.peerConnection.setRemoteDescription(new SessionDescription(
                             JSON.parse(message.fields.SDP_caller)
                         ), () => {
                             Meteor.VideoCallServices.peerConnection.createAnswer((answer) => {
