@@ -155,13 +155,13 @@ renderCallTemplate = function(template) {
 
                     if (message.fields.ice_callee != undefined) {
                         console.log("ice callee", message.fields);
-                        let iceCallee = message.fields.ice_callee;
+                        let ice = message.fields.ice_callee;
 
 
 
 
                         Meteor.VideoCallServices.peerConnection.addIceCandidate(
-                            new RTCIceCandidate(JSON.parse(iceCallee.string)),
+                            new RTCIceCandidate(JSON.parse(ice.string)),
                             function() {
 
                             },
@@ -227,7 +227,7 @@ renderCallTemplate = function(template) {
                         const ice = message.fields.ice_caller;
                         console.log("loadingIce", message);
                         Meteor.VideoCallServices.peerConnection.addIceCandidate(
-                            new RTCIceCandidate(JSON.parse(ice.string)));
+                            new RTCIceCandidate(JSON.parse(ice)));
 
                     }
                 }
