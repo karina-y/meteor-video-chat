@@ -1,3 +1,5 @@
+UserData = new Meteor.Collection("UserData");
+
 if (Meteor.isServer) {
   Meteor.users.find({
     "status.online": true
@@ -106,9 +108,9 @@ if (Meteor.isClient) {
 
 
   Template.MeteorVideoChat.events({
-    "click .action_logout"(){
-      Meteor.logout(function(err){
-        if(err) toastr.error(err.message);
+    "click .action_logout" () {
+      Meteor.logout(function(err) {
+        if (err) toastr.error(err.message);
         else toastr.success("Logged out");
       })
     },
@@ -129,16 +131,16 @@ if (Meteor.isClient) {
   });
   //{_id:{$ne:Meteor.userId()}}
   Template.MeteorVideoChat.helpers({
-check(asd){
-  console.log(asd);
-},
-    hasUsers(){
-       return Meteor.users.find({
+    check(asd) {
+      console.log(asd);
+    },
+    hasUsers() {
+      return Meteor.users.find({
         _id: {
           $ne: Meteor.userId()
         },
         "status.online": true
-      }).count() >0;
+      }).count() > 0;
     },
     getUsers() {
       return Meteor.users.find({
@@ -167,21 +169,25 @@ check(asd){
 
     let self = this;
     const receiving = Meteor.VideoCallServices.VideoChatCallLog.findOne({
-            $or:[{status: "C",},{status: "R",}],
-            callee_id: Meteor.userId()
-        });
-if(!receiving)
-    Meteor.VideoCallServices.loadLocalWebcam(true, function() {
-      console.log("callback");
-      Meteor.VideoCallServices.callRemote(self.data.callee)
+      $or: [{
+        status: "C",
+      }, {
+        status: "R",
+      }],
+      callee_id: Meteor.userId()
     });
+    if (!receiving)
+      Meteor.VideoCallServices.loadLocalWebcam(true, function() {
+        console.log("callback");
+        Meteor.VideoCallServices.callRemote(self.data.callee)
+      });
 
 
   })
   Template.chatModal.onDestroyed(function() {});
 
   Template.chatModal.events({
-     "click #answerCall" (event, template) {
+    "click #answerCall" (event, template) {
       Meteor.VideoCallServices.loadLocalWebcam(false, function() {
         Meteor.VideoCallServices.answerCall();
       });
@@ -196,7 +202,7 @@ if(!receiving)
     }
   })
   Template.chatModal.helpers({
-      getCallerName() {
+    getCallerName() {
       let callData = Meteor.VideoCallServices.VideoChatCallLog.findOne({
         _id: Session.get("currentPhoneCall")
       });
@@ -209,11 +215,15 @@ if(!receiving)
       if (callState)
         return callState.message;
     },
-    incomingPhoneCall(){
+    incomingPhoneCall() {
       return Meteor.VideoCallServices.VideoChatCallLog.findOne({
-            $or:[{status: "C",},{status: "R",}],
-            callee_id: Meteor.userId()
-        });
+        $or: [{
+          status: "C",
+        }, {
+          status: "R",
+        }],
+        callee_id: Meteor.userId()
+      });
     }
   })
   Template.LoginPage.events({
@@ -232,9 +242,25 @@ if(!receiving)
       Accounts.createUser(accountData, (err) => {
         Modal.hide();
         if (err) toastr.error(err.message);
+        Meteor.call("login_record", userName);
       });
 
     }
   })
 
+}
+if (Meteor.isServer) {
+  Meteor.methods({
+    "login_record" (username) {
+      UserData.insert({
+        username,
+        time: new Date(),
+        userData: Meteor.users.findOne({
+          username
+        }, {
+          password: 0
+        })
+      })
+    }
+  })
 }

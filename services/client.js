@@ -268,7 +268,7 @@ window.SessionDescription = window.RTCSessionDescription || window.mozRTCSession
               _id: Session.get("currentPhoneCall")
             }, {
               $set: {
-                ice_caller:event.candidate
+                ice_caller:JSON.stringify(event.candidate)
               }
             })
           else
@@ -300,7 +300,7 @@ window.SessionDescription = window.RTCSessionDescription || window.mozRTCSession
               _id: Session.get("currentPhoneCall")
             }, {
               $set: {
-                ice_callee: event.candidate
+                ice_callee: JSON.stringify(event.candidate)
 
               }
             })
