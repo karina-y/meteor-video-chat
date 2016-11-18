@@ -134,3 +134,8 @@ This will call the same function for both users, which will be followed by the "
  1. Improve Example
  2. Implement Cordova support
 
+
+## Support on Beerpay
+Hey dude! Help me out for a couple of :beers:!
+
+[![Beerpay](https://beerpay.io/elmarti/meteor-video-chat/badge.svg?style=beer-square)](https://beerpay.io/elmarti/meteor-video-chat)  [![Beerpay](https://beerpay.io/elmarti/meteor-video-chat/make-wish.svg?style=flat-square)](https://beerpay.io/elmarti/meteor-video-chat?focus=wish)
