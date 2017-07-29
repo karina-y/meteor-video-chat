@@ -1,6 +1,10 @@
 # Meteor Video Chat
 
-This is a complete solution which allows you to create a peer2peer video chat system using DDP as the handshake protocol. 
+This is a complete solution which allows you to create a peer2peer video chat system using DDP as the handshake protocol.
+
+## Update
+
+I haven't been able to work on this for a good 9 months, but I've finally got some time. I'm going to make some significant improvements to the codebase, the most recent push was a fix.
 
 ## Warning
 
@@ -134,8 +138,3 @@ This will call the same function for both users, which will be followed by the "
  1. Improve Example
  2. Implement Cordova support
 
-
-## Support on Beerpay
-Hey dude! Help me out for a couple of :beers:!
-
-[![Beerpay](https://beerpay.io/elmarti/meteor-video-chat/badge.svg?style=beer-square)](https://beerpay.io/elmarti/meteor-video-chat)  [![Beerpay](https://beerpay.io/elmarti/meteor-video-chat/make-wish.svg?style=flat-square)](https://beerpay.io/elmarti/meteor-video-chat?focus=wish)
