@@ -5,8 +5,6 @@ renderCallTemplate = function(template) {
     Session.set("remoteIceCandidates", []);
     Session.set("callState", null);
     Session.set("");
-    if (!template) var self = this;
-    else var self = template;
     /*
      *   Autorun is used to detect changes in the publication. 
      *   The functionality triggered by changes is used to devise as to 
@@ -14,9 +12,9 @@ renderCallTemplate = function(template) {
      *
      */
     console.log("created");
-    self.autorun(function() {
+    Tracker.autorun(function() {
         console.log("call autorun");
-        self.subscribe("VideoCallChatLog");
+        Meteor.subscribe("VideoCallChatLog");
         let newIncomingCall = Meteor.VideoCallServices.VideoChatCallLog.findOne({
             status: "C",
             callee_id: Meteor.userId()
