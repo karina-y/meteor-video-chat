@@ -69,6 +69,9 @@ const services = {
                     caller:meteorUser._id
                 });
                streams[logId] = new Meteor.Streamer(logId);
+                streams[logId].allowRead('all');
+                streams[logId].allowWrite('all');
+               return logId;
             }
         } else {
             throw new Meteor.Error(403, "CONNECTION_NOT_ALLOWED")

@@ -3,7 +3,7 @@ import CallLog from './call_log';
 Meteor.publish('VideoChatPublication', function() {
     return CallLog.find({
         $or: [{
-            sender: this.userId,
+            caller: this.userId,
             status:{
                 $ne:"FINISHED"
             }
