@@ -15,7 +15,6 @@ class VideoCallServices {
             && msg.fields.status == "NEW"){
                 console.log("added", msg)
                 this.callLog = msg.fields;
-                this.onReceivePhoneCall(msg.id);
                 this.stream = new Meteor.Streamer(msg.id);
                 this.stream.on('video_message', function(stream_data) {
                     console.log("target", stream_data)
@@ -31,11 +30,12 @@ class VideoCallServices {
                         this.peerConnection.addIceCandidate( stream_data.candidate );
                     }
                 });
+                this.onReceivePhoneCall(msg.id);
             }
             if( msg.collection === 'VideoChatCallLog'
                 && msg.msg === 'added'
-                && msg.fields.caller === Meteor.userId() ){
-                this.callLog = msg.fields;
+                && msg.fields.caller === Meteor.userId()
+            && msg.fields.status === 'NEW'){
                 this.stream = new Meteor.Streamer(msg.id);
                 this.stream.on('video_message', function(stream_data) {
                     console.log("sender", stream_data)
@@ -56,11 +56,10 @@ class VideoCallServices {
                 && msg.collection == 'VideoChatCallLog'
                 && msg.fields != undefined){
                 const { fields } = msg;
-                this.callLog = Object.assign({}, this.callLog, fields);
                 if ( fields.status == 'ACCEPTED' && this.caller == Meteor.userId() ){
                     navigator.mediaDevices.getUserMedia().then( stream => {
-                        if(this.local)
-                            this.local.src = stream.toDataURL();
+                        if(this.localVideo)
+                            this.localVideo.src = stream.toDataURL();
                         this.setupPeerConnection(stream);
                     }).error( err => {
                         console.log(err);
@@ -110,15 +109,19 @@ class VideoCallServices {
      * Call allows you to call a remote user using their userId
      * @param _id {string}
      */
-    call(_id, local, remote){
-        this.local = local;
-        this.remote = remote;
+    call(_id, local, remote) {
+        if (local)
+            this.localVideo = local;
+        if (remote)
+            this.removeVideo = remote;
         Meteor.call('VideoCallServices/call', _id);
     }
 
     answerPhoneCall(local, remote){
-        this.local = local;
-        this.remote = remote;
+        if (local)
+            this.localVideo = local;
+        if (remote)
+            this.removeVideo = remote;
         Meteor.call('VideoCallServices/answer');
     }
 

@@ -70,7 +70,7 @@ const services = {
                 });
                streams[logId] = new Meteor.Streamer(logId);
             }
-        }else {
+        } else {
             throw new Meteor.Error(403, "CONNECTION_NOT_ALLOWED")
         }
 
@@ -85,8 +85,11 @@ const services = {
         return true;
     },
     answer(){
+        const user = Meteor.user();
+        if(!user)
+            throw new Meteor.Error(403, "User not logged in");
         const session = CallLog.findOne({
-           target : Meteor.userId(),
+           target : user._id,
             status : 'NEW'
         });
         if (!session)
