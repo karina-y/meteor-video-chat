@@ -1,6 +1,6 @@
 # Meteor Video Chat
 This extension allows you to implement user-to-user video calling in React, Angular and Blaze.
-
+[Example](https://meteorvideochat.herokuapp.com)
 ## Configuration
 If you are testing outside of a LAN, you'll need to procure some [STUN & TURN](https://gist.github.com/yetithefoot/7592580) servers.
 
