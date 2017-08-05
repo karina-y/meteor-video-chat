@@ -1,6 +1,6 @@
 import { Tracker } from 'meteor/tracker';
 class VideoCallServices {
-    stunTurn = [];
+    RTCConfiguration = {};
     constructor(){
         this.iceCandidates = [];
         Tracker.autorun(()=>{
@@ -65,7 +65,7 @@ class VideoCallServices {
     }
     setupPeerConnection( stream, remoteDescription ){
         console.log("setup peer connection", stream, remoteDescription)
-        this.peerConnection = new RTCPeerConnection();
+        this.peerConnection = new RTCPeerConnection(this.RTCConfiguration);
         this.setPeerConnectionCallbacks();
         this.peerConnection.addStream( stream );
         if( remoteDescription )
