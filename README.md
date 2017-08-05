@@ -7,10 +7,10 @@ This extension allows you to implement user-to-user video calling in React, Angu
 [![Stories in Ready](https://badge.waffle.io/elmarti/meteor-video-chat.svg?label=ready&title=Ready)](http://waffle.io/elmarti/meteor-video-chat)
 [![Travis CI](https://travis-ci.org/elmarti/meteor-video-chat.svg?branch=master)](https://travis-ci.org/elmarti/meteor-video-chat)
 ## Configuration
-If you are testing outside of a LAN, you'll need to procure some [STUN & TURN](https://gist.github.com/yetithefoot/7592580) servers.
+Here you can set the [RTCConfiguration](https://developer.mozilla.org/en-US/docs/Web/API/RTCConfiguration). If you are testing outside of a LAN, you'll need to procure some [STUN & TURN](https://gist.github.com/yetithefoot/7592580) servers.
 
 ```
-Meteor.VideoCallServices.stunTurn = [{'iceServers': [{
+Meteor.VideoCallServices.RTCConfiguration = [{'iceServers': [{
     'urls': 'stun:stun.example.org'
   }]
 }];
