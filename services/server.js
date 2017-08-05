@@ -106,9 +106,34 @@ const services = {
                 }
             });
         }
+    },
+    end(){
+        const _id = Meteor.userId();
+        CallLog.find({
+            $or:[{
+                status:{
+                    $ne:'FINISHED'
+                },
+                target:_id
+            },{
+                status:{
+                    $ne:'FINISHED'
+                },
+                caller:_id
+            }]
+        }).forEach( call =>
+            CallLog.update({
+                _id:call._id
+            },{
+                $set:{
+                    status:'FINISHED'
+                }
+            }));
     }
+
 }
 Meteor.methods({
     'VideoCallServices/call' : services.call,
-    'VideoCallServices/answer' : services.answer
+    'VideoCallServices/answer' : services.answer,
+    'VideoCallServices/end' : services.end
 });

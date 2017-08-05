@@ -1,6 +1,6 @@
 import { Tracker } from 'meteor/tracker';
 class VideoCallServices {
-
+    stunTurn = [];
     constructor(){
         this.iceCandidates = [];
         Tracker.autorun(()=>{
@@ -11,6 +11,10 @@ class VideoCallServices {
         Meteor.connection._stream.on('message', (msg) => {
 
             msg = JSON.parse(msg);
+            if( msg.collection === 'VideoChatCallLog'
+            && msg.msg === 'removed'){
+                this.onTerminateCall();
+            }
             if( msg.collection === 'VideoChatCallLog'
                 && msg.msg === 'added'
                 && msg.fields.target === Meteor.userId()
@@ -25,6 +29,8 @@ class VideoCallServices {
                     if( stream_data.offer ){
                         console.log("got offer")
                         navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then( stream => {
+                            if(this.localVideo)
+                                this.localVideo.src = URL.createObjectURL(stream);
                             this.setupPeerConnection( stream, stream_data.offer );
                         });
                     }
@@ -49,7 +55,7 @@ class VideoCallServices {
                 if ( fields.status == 'ACCEPTED' && callLog.caller == Meteor.userId() ){
                     navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then( stream => {
                         if(this.localVideo)
-                            this.localVideo.src = stream.toDataURL();
+                            this.localVideo.src = URL.createObjectURL(stream);
                         this.setupPeerConnection(stream);
                     });
                 }
@@ -76,11 +82,11 @@ class VideoCallServices {
         this.peerConnection.oniceconnectionstatechange =  ( event ) => {
           console.log(event);
         };
-        this.peerConnection.onaddstream = ( stream ) => {
+        this.peerConnection.onaddstream = function( stream ) {
             console.log("got remote stream", stream);
             if(this.remoteVideo)
           this.remoteVideo.src = URL.createObjectURL(stream.stream);
-        };
+        }.bind(this);
     }
     createTargetSession( remoteDescription ){
         const { iceCandidates } = this;
@@ -137,6 +143,9 @@ class VideoCallServices {
             this.remoteVideo = remote;
         Meteor.call('VideoCallServices/answer');
     }
+    endPhoneCall(){
+        Meteor.call("VideoCallServices/end");
+    }
 
     /**
      * Call allows you to call a remote user using their userId
@@ -147,6 +156,9 @@ class VideoCallServices {
 
     }
     onReceivePhoneCall(fields){
+
+    }
+    onTerminateCall(){
 
     }
 }
