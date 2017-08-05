@@ -53,6 +53,7 @@ class VideoCallServices {
                 && msg.fields != undefined){
                 const { fields } = msg;
                 if ( fields.status == 'ACCEPTED' && callLog.caller == Meteor.userId() ){
+                    this.onTargetAccept();
                     navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then( stream => {
                         if(this.localVideo)
                             this.localVideo.src = URL.createObjectURL(stream);
@@ -66,6 +67,7 @@ class VideoCallServices {
     setupPeerConnection( stream, remoteDescription ){
         console.log("setup peer connection", stream, remoteDescription)
         this.peerConnection = new RTCPeerConnection(this.RTCConfiguration);
+        this.onPeerConnectionCreated();
         this.setPeerConnectionCallbacks();
         this.peerConnection.addStream( stream );
         if( remoteDescription )
@@ -159,6 +161,9 @@ class VideoCallServices {
 
     }
     onTerminateCall(){
+
+    }
+    onPeerConnectionCreated(){
 
     }
 }

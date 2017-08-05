@@ -51,6 +51,12 @@ The following method is invoked when either user ends the call
 Meteor.VideoCallServices.onTerminateCall = () => {
 }
 ```
+The following method invoked when the RTCPeerConnection instance has been created, making it possible to consitently mutate it or add a data channel
+```
+Meteor.VideoCallServices.onPeerConnectionCreated = () => {
+}
+
+```
 
 Current issues:
 - Cross browser compatibility not checked
