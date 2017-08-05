@@ -1,10 +1,17 @@
-Meteor.publish("VideoCallChatLog", function() {
-    //Reactive computation to detect offline users 
-    return VideoCallServices.VideoChatCallLog.find({
+import { Meteor } from 'meteor/meteor';
+import CallLog from './call_log';
+Meteor.publish('VideoChatPublication', function() {
+    return CallLog.find({
         $or: [{
-            caller_id: this.userId
+            caller: this.userId,
+            status:{
+                $ne:"FINISHED"
+            }
         }, {
-            callee_id: this.userId
+            target: this.userId,
+            status:{
+                $ne:"FINISHED"
+            }
         }]
     });
 });

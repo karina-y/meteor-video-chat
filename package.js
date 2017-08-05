@@ -1,6 +1,6 @@
 Package.describe({
   name: 'elmarti:video-chat',
-  version: '0.4.11',
+  version: '1.0.0',
   // Brief, one-line summary of the package.
   summary: 'Simple WebRTC Video Chat for your app.',
   // URL to the Git repository containing the source code for this package.
@@ -10,17 +10,17 @@ Package.describe({
   documentation: 'README.md'
 });
 
-Package.onUse(function(api) {
-  api.versionsFrom('1.2.1');
+Package.onUse(api => {
+  api.versionsFrom('1.5');
   api.use('ecmascript');
+  api.use("rocketchat:streamer@0.5.0");
   api.use("mizzao:user-status@0.6.6");
   api.use(['templating'], 'client');
   api.addFiles(['services/server.js', 'services/publish.js'], "server");
-  api.addFiles(['template.js', 'services/client.js'], "client");
-  api.export(['VideoChatCallLog', 'VideoCallServices', "renderCallTemplate"]);
+  api.addFiles(['services/client.js'], "client");
 });
 
-Package.onTest(function(api) {
+Package.onTest(api => {
   api.use('ecmascript');
   api.use('tinytest');
   
