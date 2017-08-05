@@ -15,7 +15,6 @@ Package.onUse(api => {
   api.use('ecmascript');
   api.use("rocketchat:streamer@0.5.0");
   api.use("mizzao:user-status@0.6.6");
-  api.use(['templating'], 'client');
   api.addFiles(['services/server.js', 'services/publish.js'], "server");
   api.addFiles(['services/client.js'], "client");
 });
