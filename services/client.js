@@ -5,7 +5,6 @@ class VideoCallServices {
         this.iceCandidates = [];
         Tracker.autorun(()=>{
             this.sub = Meteor.subscribe('VideoChatPublication');
-            console.log("vid chat pub")
         });
         let callLog;
         Meteor.connection._stream.on('message', (msg) => {
@@ -19,18 +18,18 @@ class VideoCallServices {
                 && msg.msg === 'added'
                 && msg.fields.target === Meteor.userId()
             && msg.fields.status == "NEW"){
-                console.log("added", msg)
                 callLog = msg.fields;
                 this.stream = new Meteor.Streamer(msg.id);
                 this.stream.on('video_message', (stream_data) => {
-                    console.log("target", stream_data)
                     if( typeof stream_data == "string")
                         stream_data = JSON.parse(stream_data);
                     if( stream_data.offer ){
-                        console.log("got offer")
                         navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then( stream => {
-                            if(this.localVideo)
+                            if(this.localVideo){
                                 this.localVideo.src = URL.createObjectURL(stream);
+                                this.localVideo.muted = true;
+                                this.localVideo.play();
+                                }
                             this.setupPeerConnection( stream, stream_data.offer );
                         });
                     }
@@ -55,8 +54,11 @@ class VideoCallServices {
                 if ( fields.status == 'ACCEPTED' && callLog.caller == Meteor.userId() ){
                     this.onTargetAccept();
                     navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then( stream => {
-                        if(this.localVideo)
+                        if(this.localVideo){
                             this.localVideo.src = URL.createObjectURL(stream);
+                            this.localVideo.muted = true;
+                            this.localVideo.play();
+                        }
                         this.setupPeerConnection(stream);
                     });
                 }
@@ -65,7 +67,6 @@ class VideoCallServices {
 
     }
     setupPeerConnection( stream, remoteDescription ){
-        console.log("setup peer connection", stream, remoteDescription)
         this.peerConnection = new RTCPeerConnection(this.RTCConfiguration);
         this.onPeerConnectionCreated();
         this.setPeerConnectionCallbacks();
@@ -85,14 +86,14 @@ class VideoCallServices {
           console.log(event);
         };
         this.peerConnection.onaddstream = function( stream ) {
-            console.log("got remote stream", stream);
-            if(this.remoteVideo)
-          this.remoteVideo.src = URL.createObjectURL(stream.stream);
+            if(this.remoteVideo) {
+                this.remoteVideo.src = URL.createObjectURL(stream.stream);
+                this.remoteVideo.play();
+            }
         }.bind(this);
     }
     createTargetSession( remoteDescription ){
         const { iceCandidates } = this;
-        console.log("dave", iceCandidates)
         this.iceCandidates = [];
         let i ;
         for (i = 0; i< iceCandidates.length; i++)
@@ -127,7 +128,6 @@ class VideoCallServices {
             this.stream.on('video_message', (stream_data) => {
                 if(typeof stream_data == 'string')
                     stream_data = JSON.parse(stream_data);
-                console.log("sender", stream_data)
                 if( stream_data.answer ){
                     this.peerConnection.setRemoteDescription( stream_data.answer );
                 }
