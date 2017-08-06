@@ -3,7 +3,6 @@ import { check } from 'meteor/check';
 import CallLog from './call_log';
 Meteor.users.find({ "status.online": true }).observe({
     removed: function({_id}) {
-        console.log('removed', _id)
         CallLog.find({
             $or:[{
                 status:{
