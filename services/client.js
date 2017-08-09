@@ -1,4 +1,5 @@
 import { Tracker } from 'meteor/tracker';
+require("webrtc-adapter");
 class VideoCallServices {
     RTCConfiguration = {};
     constructor(){
@@ -26,12 +27,13 @@ class VideoCallServices {
                     if( stream_data.offer ){
                         navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then( stream => {
                             if(this.localVideo){
-                                this.localVideo.src = URL.createObjectURL(stream);
+                                this.localVideo.srcObject = stream;
                                 this.localVideo.muted = true;
                                 this.localVideo.play();
                                 }
                             this.setupPeerConnection( stream, stream_data.offer );
-                        });
+                        }).catch( err => this.onError(err)
+                        );
                     }
                     if( stream_data.candidate ){
                         if(this.peerConnection)
@@ -55,19 +57,24 @@ class VideoCallServices {
                     this.onTargetAccept();
                     navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then( stream => {
                         if(this.localVideo){
-                            this.localVideo.src = URL.createObjectURL(stream);
+                            this.localVideo.srcObject = stream;
                             this.localVideo.muted = true;
                             this.localVideo.play();
                         }
                         this.setupPeerConnection(stream);
-                    });
+                    }).catch( err => this.onError(err));
                 }
             }
         });
 
     }
+    /**
+     * Set up the peer connection
+     * @param stream {MediaStream}
+     * @param remoteDescription {RTCPeerConnection}
+     */
     setupPeerConnection( stream, remoteDescription ){
-        this.peerConnection = new RTCPeerConnection(this.RTCConfiguration);
+        this.peerConnection = new RTCPeerConnection(this.RTCConfiguration, {"optional": [ {'googIPv6': 'false'} ] } );
         this.onPeerConnectionCreated();
         this.setPeerConnectionCallbacks();
         this.peerConnection.addStream( stream );
@@ -76,6 +83,9 @@ class VideoCallServices {
         else
             this.createCallSession();
     }
+    /**
+     * Set callback for RTCPeerConnection
+     */
     setPeerConnectionCallbacks(){
         this.peerConnection.onicecandidate =  ( event ) => {
           if( event.candidate ){
@@ -87,11 +97,15 @@ class VideoCallServices {
         };
         this.peerConnection.onaddstream = function( stream ) {
             if(this.remoteVideo) {
-                this.remoteVideo.src = URL.createObjectURL(stream.stream);
+                this.remoteVideo.srcObject = stream.stream;
                 this.remoteVideo.play();
             }
         }.bind(this);
     }
+    /**
+     * Create the RTCPeerConnection for the person being called
+     * @param remoteDescription {RemoteDescription}
+     */
     createTargetSession( remoteDescription ){
         const { iceCandidates } = this;
         this.iceCandidates = [];
@@ -102,17 +116,17 @@ class VideoCallServices {
         this.peerConnection.setRemoteDescription( remoteDescription ).then( () => {
 
             this.peerConnection.createAnswer().then( answer => {
-                this.peerConnection.setLocalDescription( answer );
+                this.peerConnection.setLocalDescription( answer ).catch( err => this.onError(err));
                 this.stream.emit( 'video_message', JSON.stringify({ answer }) );
-            });
-        });
+            }).catch( err => this.onError(err));
+        }).catch( err => this.onError(err));
 
     }
     createCallSession( ){
         this.peerConnection.createOffer().then( offer => {
-            this.peerConnection.setLocalDescription( offer );
+            this.peerConnection.setLocalDescription( offer ).catch( err => this.onError(err));
             this.stream.emit( 'video_message', JSON.stringify({ offer }) );
-        });
+        }).catch( err => this.onError(err));
     }
     /**
      * Call allows you to call a remote user using their userId
@@ -124,35 +138,48 @@ class VideoCallServices {
         if (remote)
             this.remoteVideo = remote;
         Meteor.call('VideoCallServices/call', _id, ( err, _id )=>{
+
+            if(err)
+                this.onError(err);
+            else {
             this.stream = new Meteor.Streamer(_id);
             this.stream.on('video_message', (stream_data) => {
                 if(typeof stream_data == 'string')
                     stream_data = JSON.parse(stream_data);
                 if( stream_data.answer ){
-                    this.peerConnection.setRemoteDescription( stream_data.answer );
+                    this.peerConnection.setRemoteDescription( stream_data.answer ).catch( err => this.onError(err));
                 }
                 if( stream_data.candidate ){
-                    this.peerConnection.addIceCandidate( JSON.parse(stream_data.candidate) );
+                    this.peerConnection.addIceCandidate( JSON.parse(stream_data.candidate) ).catch( err => this.onError(err));
                 }
             });
+            }
         });
     }
-
+    /**
+     * Answer the phone call
+     * @param local {HTMLElement}
+     * @param remote {HTMLElement}
+     */
     answerPhoneCall(local, remote){
         if (local)
             this.localVideo = local;
         if (remote)
             this.remoteVideo = remote;
-        Meteor.call('VideoCallServices/answer');
+        Meteor.call('VideoCallServices/answer', err => {
+            if(err)
+                this.onError(err);
+        });
     }
-    endPhoneCall(){
-        Meteor.call("VideoCallServices/end");
-    }
-
     /**
-     * Call allows you to call a remote user using their userId
-     * @param _id {string}
+     * End the phone call
      */
+    endPhoneCall(){
+        Meteor.call("VideoCallServices/end", err => {
+            if(err)
+                this.onError(err);
+        });
+    }
 
     onTargetAccept(){
 
@@ -164,6 +191,9 @@ class VideoCallServices {
 
     }
     onPeerConnectionCreated(){
+
+    }
+    onError(err){
 
     }
 }

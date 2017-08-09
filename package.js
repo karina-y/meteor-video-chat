@@ -18,7 +18,9 @@ Package.onUse(api => {
   api.addFiles(['services/server.js', 'services/publish.js'], "server");
   api.addFiles(['services/client.js'], "client");
 });
-
+Npm.depends({
+    "webrtc-adapter": "4.2.2"
+});
 Package.onTest(api => {
   api.use('ecmascript');
   api.use('tinytest');

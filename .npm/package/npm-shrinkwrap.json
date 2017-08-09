@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "sdp": {
+      "version": "2.2.0",
+      "resolved": "https://registry.npmjs.org/sdp/-/sdp-2.2.0.tgz",
+      "from": "sdp@>=2.1.0 <3.0.0"
+    },
+    "webrtc-adapter": {
+      "version": "4.2.2",
+      "resolved": "https://registry.npmjs.org/webrtc-adapter/-/webrtc-adapter-4.2.2.tgz",
+      "from": "webrtc-adapter@4.2.2"
+    }
+  }
+}
