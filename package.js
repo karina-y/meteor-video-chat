@@ -1,6 +1,6 @@
 Package.describe({
   name: 'elmarti:video-chat',
-  version: '1.0.3',
+  version: '1.0.4',
   // Brief, one-line summary of the package.
   summary: 'Simple WebRTC Video Chat for your app.',
   // URL to the Git repository containing the source code for this package.
@@ -18,7 +18,9 @@ Package.onUse(api => {
   api.addFiles(['services/server.js', 'services/publish.js'], "server");
   api.addFiles(['services/client.js'], "client");
 });
-
+Npm.depends({
+    "webrtc-adapter": "4.2.2"
+});
 Package.onTest(api => {
   api.use('ecmascript');
   api.use('tinytest');

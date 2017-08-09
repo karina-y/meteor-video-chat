@@ -15,19 +15,19 @@ Meteor.VideoCallServices.RTCConfiguration = [{'iceServers': [{
   }]
 }];
 ```
-####Calling a user
+#### Calling a user
 To call a user, call the following method with their _id, the local video element/ react ref and the target video/react ref.
 ```
 Meteor.VideoCallServices.call(tartUserId, this.refs.caller, this.refs.target);
 ```
-####Deciding who can connect to whom
+#### Deciding who can connect to whom
 The follow method can be overridden on the server side to implement some kind of filtering. Returning `false` will cancel the call, and `true` will allow it to go ahead.
 ```
 Meteor.VideoCallServices.checkConnect = function(caller, target){
 return *can caller and target call each other"
 };
 ```
-####Answering a call
+#### Answering a call
 The first step is to handle the onReceivePhoneCall callback and then to accept the call. The answerPhoneCall method accepts the local video and the target video.
 ```
  Meteor.VideoCallServices.onReceivePhoneCall = (userId) => {
@@ -35,12 +35,12 @@ Meteor.VideoCallServices.answerPhoneCall(this.refs.caller, this.refs.target);
         };
 
 ```
-####Ending phone call
+#### Ending phone call
 Simply call
 ```
 Meteor.VideoCallServices.end();
 ```
-####Other events
+#### Other events
 The following method is invoked when the callee accepts the phone call.
 ```
 Meteor.VideoCallServices.onTargetAccept = () => {
@@ -56,6 +56,13 @@ The following method invoked when the RTCPeerConnection instance has been create
 Meteor.VideoCallServices.onPeerConnectionCreated = () => {
 }
 
+```
+The following method is invoked on both the client and server whenever an error is caught.
+User is only passed on the server
+
+```
+Meteor.VideoCallServices.onPeerConnectionCreated = (err, user) => {
+}
 ```
 
 Current issues:
