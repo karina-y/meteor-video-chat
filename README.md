@@ -18,7 +18,7 @@ Meteor.VideoCallServices.RTCConfiguration = [{'iceServers': [{
 #### Calling a user
 To call a user, call the following method with their _id, the local video element/ react ref and the target video/react ref.
 ```
-Meteor.VideoCallServices.call(tartUserId, this.refs.caller, this.refs.target);
+Meteor.VideoCallServices.call(targetUserId, this.refs.caller, this.refs.target);
 ```
 #### Deciding who can connect to whom
 The follow method can be overridden on the server side to implement some kind of filtering. Returning `false` will cancel the call, and `true` will allow it to go ahead.
@@ -61,7 +61,7 @@ The following method is invoked on both the client and server whenever an error 
 User is only passed on the server
 
 ```
-Meteor.VideoCallServices.onPeerConnectionCreated = (err, user) => {
+Meteor.VideoCallServices.onError = (err, user) => {
 }
 ```
 
