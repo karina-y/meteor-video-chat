@@ -36,9 +36,11 @@ class VideoCallServices {
                         );
                     }
                     if( stream_data.candidate ){
+                        if( typeof stream_data.candidate == "string")
+                            stream_data.candidate = JSON.parse(stream_data.candidate);
                         if(this.peerConnection)
-                            this.peerConnection.addIceCandidate( JSON.parse(stream_data.candidate) );
-                        else this.iceCandidates.push(JSON.parse(stream_data.candidate));
+                            this.peerConnection.addIceCandidate(stream_data.candidate);
+                        else this.iceCandidates.push(stream_data.candidate);
                     }
                 });
                 this.onReceivePhoneCall(msg.id);
@@ -68,7 +70,7 @@ class VideoCallServices {
         });
 
     }
-    /**
+    /**5
      * Set up the peer connection
      * @param stream {MediaStream}
      * @param remoteDescription {RTCPeerConnection}
@@ -150,7 +152,10 @@ class VideoCallServices {
                     this.peerConnection.setRemoteDescription( stream_data.answer ).catch( err => this.onError(err));
                 }
                 if( stream_data.candidate ){
-                    this.peerConnection.addIceCandidate( JSON.parse(stream_data.candidate) ).catch( err => this.onError(err));
+                    if( typeof stream_data.candidate == 'string' )
+                        stream_data.candidate = JSON.parse(stream_data.candidate);
+
+                    this.peerConnection.addIceCandidate( stream_data.candidate ).catch( err => this.onError(err));
                 }
             });
             }
