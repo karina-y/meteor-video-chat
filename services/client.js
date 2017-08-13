@@ -39,7 +39,7 @@ class VideoCallServices {
                         if( typeof stream_data.candidate == "string")
                             stream_data.candidate = JSON.parse(stream_data.candidate);
                         if(this.peerConnection)
-                            this.peerConnection.addIceCandidate(stream_data.candidate);
+                            this.peerConnection.addIceCandidate(stream_data.candidate).catch(err => this.onError(err));
                         else this.iceCandidates.push(stream_data.candidate);
                     }
                 });
@@ -113,7 +113,7 @@ class VideoCallServices {
         this.iceCandidates = [];
         let i ;
         for (i = 0; i< iceCandidates.length; i++)
-            this.peerConnection.addIceCandidate(iceCandidates[i]);
+            this.peerConnection.addIceCandidate(iceCandidates[i]).catch(err => this.onError(err));
 
         this.peerConnection.setRemoteDescription( remoteDescription ).then( () => {
 
