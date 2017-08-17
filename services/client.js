@@ -38,9 +38,10 @@ class VideoCallServices {
                     if( stream_data.candidate ){
                         if( typeof stream_data.candidate == "string")
                             stream_data.candidate = JSON.parse(stream_data.candidate);
+                        const candidate = new RTCIceCandidate(stream_data.candidate);
                         if(this.peerConnection)
-                            this.peerConnection.addIceCandidate(stream_data.candidate).catch(err => this.onError(err));
-                        else this.iceCandidates.push(stream_data.candidate);
+                            this.peerConnection.addIceCandidate(candidate).catch(err => this.onError(err));
+                        else this.iceCandidates.push(candidate);
                     }
                 });
                 this.onReceivePhoneCall(msg.id);
