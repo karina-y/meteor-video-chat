@@ -32,7 +32,7 @@ class VideoCallServices {
                                 this.localVideo.play();
                                 }
                             this.setupPeerConnection( stream, stream_data.offer );
-                        }).catch( err => this.onError(err)
+                        }).catch( err => this.onError(err, stream_data)
                         );
                     }
                     if( stream_data.candidate ){
@@ -40,7 +40,7 @@ class VideoCallServices {
                             stream_data.candidate = JSON.parse(stream_data.candidate);
                         const candidate = new RTCIceCandidate(stream_data.candidate);
                         if(this.peerConnection)
-                            this.peerConnection.addIceCandidate(candidate).catch(err => this.onError(err));
+                            this.peerConnection.addIceCandidate(candidate).catch(err => this.onError(err, stream_data));
                         else this.iceCandidates.push(candidate);
                     }
                 });
@@ -65,7 +65,7 @@ class VideoCallServices {
                             this.localVideo.play();
                         }
                         this.setupPeerConnection(stream);
-                    }).catch( err => this.onError(err));
+                    }).catch( err => this.onError(err, msg));
                 }
             }
         });
@@ -114,20 +114,20 @@ class VideoCallServices {
         this.iceCandidates = [];
         let i ;
         for (i = 0; i< iceCandidates.length; i++)
-            this.peerConnection.addIceCandidate(iceCandidates[i]).catch(err => this.onError(err));
+            this.peerConnection.addIceCandidate(iceCandidates[i]).catch(err => this.onError(err, iceCandidates[i]));
 
         this.peerConnection.setRemoteDescription( remoteDescription ).then( () => {
 
             this.peerConnection.createAnswer().then( answer => {
-                this.peerConnection.setLocalDescription( answer ).catch( err => this.onError(err));
+                this.peerConnection.setLocalDescription( answer ).catch( err => this.onError(err, answer));
                 this.stream.emit( 'video_message', JSON.stringify({ answer }) );
-            }).catch( err => this.onError(err));
-        }).catch( err => this.onError(err));
+            }).catch( err => this.onError(err, remoteDescription));
+        }).catch( err => this.onError(err, remoteDescription));
 
     }
     createCallSession( ){
         this.peerConnection.createOffer().then( offer => {
-            this.peerConnection.setLocalDescription( offer ).catch( err => this.onError(err));
+            this.peerConnection.setLocalDescription( offer ).catch( err => this.onError(err, offer));
             this.stream.emit( 'video_message', JSON.stringify({ offer }) );
         }).catch( err => this.onError(err));
     }
@@ -143,20 +143,20 @@ class VideoCallServices {
         Meteor.call('VideoCallServices/call', _id, ( err, _id )=>{
 
             if(err)
-                this.onError(err);
+                this.onError(err, _id);
             else {
             this.stream = new Meteor.Streamer(_id);
             this.stream.on('video_message', (stream_data) => {
                 if(typeof stream_data == 'string')
                     stream_data = JSON.parse(stream_data);
                 if( stream_data.answer ){
-                    this.peerConnection.setRemoteDescription( stream_data.answer ).catch( err => this.onError(err));
+                    this.peerConnection.setRemoteDescription( stream_data.answer ).catch( err => this.onError(err, stream_data));
                 }
                 if( stream_data.candidate ){
                     if( typeof stream_data.candidate == 'string' )
                         stream_data.candidate = JSON.parse(stream_data.candidate);
 
-                    this.peerConnection.addIceCandidate( stream_data.candidate ).catch( err => this.onError(err));
+                    this.peerConnection.addIceCandidate( stream_data.candidate ).catch( err => this.onError(err, stream_data));
                 }
             });
             }

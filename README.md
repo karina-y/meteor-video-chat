@@ -61,7 +61,7 @@ The following method is invoked on both the client and server whenever an error 
 User is only passed on the server
 
 ```
-Meteor.VideoCallServices.onError = (err, user) => {
+Meteor.VideoCallServices.onError = (err, data, user) => {
 }
 ```
 
