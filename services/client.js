@@ -3,7 +3,6 @@ require("webrtc-adapter");
 class VideoCallServices {
     RTCConfiguration = {};
     constructor(){
-        this.iceCandidates = [];
         Tracker.autorun(()=>{
             this.sub = Meteor.subscribe('VideoChatPublication');
         });
@@ -32,16 +31,18 @@ class VideoCallServices {
                                 this.localVideo.play();
                                 }
                             this.setupPeerConnection( stream, stream_data.offer );
-                        }).catch( err => this.onError(err, stream_data)
-                        );
+                        }).catch( err => {
+                            this.onError(err, stream_data)
+                        });
                     }
                     if( stream_data.candidate ){
                         if( typeof stream_data.candidate == "string")
                             stream_data.candidate = JSON.parse(stream_data.candidate);
                         const candidate = new RTCIceCandidate(stream_data.candidate);
                         if(this.peerConnection)
-                            this.peerConnection.addIceCandidate(candidate).catch(err => this.onError(err, stream_data));
-                        else this.iceCandidates.push(candidate);
+                            this.peerConnection.addIceCandidate(candidate).catch(err => {
+                                this.onError(err, stream_data);
+                            });
                     }
                 });
                 this.onReceivePhoneCall(msg.id);
@@ -65,7 +66,9 @@ class VideoCallServices {
                             this.localVideo.play();
                         }
                         this.setupPeerConnection(stream);
-                    }).catch( err => this.onError(err, msg));
+                    }).catch( err => {
+                        this.onError(err, msg)
+                    });
                 }
             }
         });
@@ -101,7 +104,8 @@ class VideoCallServices {
         this.peerConnection.onaddstream = function( stream ) {
             if(this.remoteVideo) {
                 this.remoteVideo.srcObject = stream.stream;
-                this.remoteVideo.play();
+                if(this.remoteVideo.paused)
+                    this.remoteVideo.play();
             }
         }.bind(this);
     }
@@ -110,24 +114,29 @@ class VideoCallServices {
      * @param remoteDescription {RemoteDescription}
      */
     createTargetSession( remoteDescription ){
-        const { iceCandidates } = this;
-        this.iceCandidates = [];
-        let i ;
-        for (i = 0; i< iceCandidates.length; i++)
-            this.peerConnection.addIceCandidate(iceCandidates[i]).catch(err => this.onError(err, iceCandidates[i]));
+
+
 
         this.peerConnection.setRemoteDescription( remoteDescription ).then( () => {
 
             this.peerConnection.createAnswer().then( answer => {
-                this.peerConnection.setLocalDescription( answer ).catch( err => this.onError(err, answer));
+                this.peerConnection.setLocalDescription( answer ).catch( err => {
+                    this.onError(err, answer);
+                });
                 this.stream.emit( 'video_message', JSON.stringify({ answer }) );
-            }).catch( err => this.onError(err, remoteDescription));
-        }).catch( err => this.onError(err, remoteDescription));
+            }).catch( err => {
+                this.onError(err, remoteDescription);
+            });
+        }).catch( err => {
+            this.onError(err, remoteDescription);
+        });
 
     }
     createCallSession( ){
         this.peerConnection.createOffer().then( offer => {
-            this.peerConnection.setLocalDescription( offer ).catch( err => this.onError(err, offer));
+            this.peerConnection.setLocalDescription( offer ).catch( err => {
+                this.onError(err, offer);
+            });
             this.stream.emit( 'video_message', JSON.stringify({ offer }) );
         }).catch( err => this.onError(err));
     }
@@ -150,13 +159,17 @@ class VideoCallServices {
                 if(typeof stream_data == 'string')
                     stream_data = JSON.parse(stream_data);
                 if( stream_data.answer ){
-                    this.peerConnection.setRemoteDescription( stream_data.answer ).catch( err => this.onError(err, stream_data));
+                    this.peerConnection.setRemoteDescription( stream_data.answer ).catch( err => {
+                        this.onError(err, stream_data)
+                    });
                 }
                 if( stream_data.candidate ){
                     if( typeof stream_data.candidate == 'string' )
                         stream_data.candidate = JSON.parse(stream_data.candidate);
 
-                    this.peerConnection.addIceCandidate( stream_data.candidate ).catch( err => this.onError(err, stream_data));
+                    this.peerConnection.addIceCandidate( stream_data.candidate ).catch( err => {
+                        this.onError(err, stream_data);
+                    });
                 }
             });
             }
