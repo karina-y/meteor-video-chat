@@ -45,7 +45,7 @@ class VideoCallServices {
                             });
                     }
                 });
-                this.onReceivePhoneCall(msg.id);
+                this.onReceivePhoneCall(callLog.caller);
             }
             if( msg.collection === 'VideoChatCallLog'
                 && msg.msg === 'added'
