@@ -1,5 +1,4 @@
 import { Tracker } from 'meteor/tracker';
-require("webrtc-adapter");
 class VideoCallServices {
     RTCConfiguration = {};
     constructor(){

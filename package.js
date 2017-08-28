@@ -16,10 +16,7 @@ Package.onUse(api => {
   api.use("rocketchat:streamer@0.5.0");
   api.use("mizzao:user-status@0.6.6");
   api.addFiles(['services/server.js', 'services/publish.js'], "server");
-  api.addFiles(['services/client.js'], "client");
-});
-Npm.depends({
-    "webrtc-adapter": "4.2.2"
+  api.addFiles(['services/client.js', 'services/adapter.js'], "client");
 });
 Package.onTest(api => {
   api.use('ecmascript');
