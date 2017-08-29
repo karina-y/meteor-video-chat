@@ -79,7 +79,7 @@ class VideoCallServices {
      * @param remoteDescription {RTCPeerConnection}
      */
     setupPeerConnection( stream, remoteDescription ){
-        this.peerConnection = new RTCPeerConnection(this.RTCConfiguration, {"optional": [ {'googIPv6': 'false'} ] } );
+        this.peerConnection = new RTCPeerConnection(this.RTCConfiguration, {"optional": [ {'googIPv6': false} ] } );
         this.onPeerConnectionCreated();
         this.setPeerConnectionCallbacks();
         this.peerConnection.addStream( stream );
