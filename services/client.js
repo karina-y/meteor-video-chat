@@ -93,9 +93,11 @@ class VideoCallServices {
      */
     setPeerConnectionCallbacks(){
         this.peerConnection.onicecandidate =  ( event ) => {
-          if( event.candidate ){
-              this.stream.emit( 'video_message', { candidate : JSON.stringify(event.candidate) });
+
+          if( event.candidate === undefined ){
+              event.candidate = {};
           }
+          this.stream.emit( 'video_message', { candidate : JSON.stringify(event.candidate) });
         };
         this.peerConnection.oniceconnectionstatechange =  ( event ) => {
           console.log(event);
