@@ -37,7 +37,9 @@ class VideoCallServices {
                     if( stream_data.candidate ){
                         if( typeof stream_data.candidate == "string")
                             stream_data.candidate = JSON.parse(stream_data.candidate);
-                        const candidate = new RTCIceCandidate(stream_data.candidate);
+                        console.log(stream_data.candidate);
+                        const candidate = stream_data.candidate === {}
+                        || stream_data.candidate === null ? null : new RTCIceCandidate(stream_data.candidate);
                         if(this.peerConnection)
                             this.peerConnection.addIceCandidate(candidate).catch(err => {
                                 this.onError(err, stream_data);
