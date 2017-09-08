@@ -3,7 +3,8 @@ import { Meteor } from "meteor/meteor";
 import { Tracker } from "meteor/tracker";
 class VideoCallServices {
 	RTCConfiguration = {};
-
+	RetryLimit = 5;
+	RetryCount = 0;
 	constructor() {
 		Tracker.autorun( () => {
 			this.sub = Meteor.subscribe( 'VideoChatPublication' );
@@ -29,11 +30,12 @@ class VideoCallServices {
 					if ( stream_data.offer ) {
 						navigator.mediaDevices.getUserMedia( { audio: true, video: true } ).then( stream => {
 							if ( this.localVideo ) {
+								if(!this.localVideo.paused)
+									this.localVideo.pause();
 								this.localVideo.srcObject = stream;
 								this.localVideo.muted = true;
-								if ( this.remoteVideo.paused ) {
-									this.localVideo.play();
-								}
+								this.localVideo.play();
+
 
 							}
 							this.setupPeerConnection( stream, stream_data.offer );
@@ -69,10 +71,11 @@ class VideoCallServices {
 					this.onTargetAccept();
 					navigator.mediaDevices.getUserMedia( { audio: true, video: true } ).then( stream => {
 						if ( this.localVideo ) {
+                            if(!this.localVideo.paused)
+                                this.localVideo.pause();
 							this.localVideo.srcObject = stream;
 							this.localVideo.muted = true;
-							if ( this.remoteVideo.paused )
-								this.localVideo.play();
+							this.localVideo.play();
 						}
 						this.setupPeerConnection( stream );
 					} ).catch( err => {
@@ -112,13 +115,36 @@ class VideoCallServices {
 			this.stream.emit( 'video_message', { candidate: JSON.stringify( event.candidate ) } );
 		};
 		this.peerConnection.oniceconnectionstatechange = ( event ) => {
+		    if( event.target.iceConnectionState === "failed" ){
+		        this.peerConnection = undefined;
+		        if(this.RetryCount < this.RetryLimit) {
+                    navigator.mediaDevices.getUserMedia({audio: true, video: true}).then(stream => {
+                    	this.RetryCount++;
+                        if (this.localVideo) {
+                            if(!this.localVideo.paused)
+                                this.localVideo.pause();
+                            this.localVideo.srcObject = stream;
+                            this.localVideo.muted = true;
+							this.localVideo.play();
+                        }
+                        this.setupPeerConnection(stream);
+                    }).catch(err => {
+                        this.onError(err, msg);
+                    });
+                } else {
+		            const error = new Error(408, "Could not establish connection");
+		            this.onError(error);
+                }
+
+            }
 			console.log( event );
 		};
 		this.peerConnection.onaddstream = function ( stream ) {
 			if ( this.remoteVideo ) {
+                if(!this.remoteVideo.paused)
+                    this.remoteVideo.pause();
 				this.remoteVideo.srcObject = stream.stream;
-				if ( this.remoteVideo.paused )
-					this.remoteVideo.play();
+				this.remoteVideo.play();
 			}
 		}.bind( this );
 	}
@@ -148,10 +174,11 @@ class VideoCallServices {
 
 	createCallSession() {
 		this.peerConnection.createOffer().then( offer => {
+            this.stream.emit( 'video_message', JSON.stringify( { offer } ) );
 			this.peerConnection.setLocalDescription( offer ).catch( err => {
 				this.onError( err, offer );
 			} );
-			this.stream.emit( 'video_message', JSON.stringify( { offer } ) );
+
 		} ).catch( err => this.onError( err ) );
 	}
 
@@ -162,12 +189,13 @@ class VideoCallServices {
 	 * @remote remote {HTMLElement}
 	 */
 	call( _id, local, remote ) {
+	    this.RetryCount = 0;
 		if ( local )
 			this.localVideo = local;
 		if ( remote )
 			this.remoteVideo = remote;
 		Meteor.call( 'VideoCallServices/call', _id, ( err, _id ) => {
-
+			this.RetryCount++;
 			if ( err )
 				this.onError( err, _id );
 			else {
