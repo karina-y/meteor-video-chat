@@ -7,9 +7,11 @@ import meteor from './meteor';
 import { Video as video } from '../lib/video';
 import tracker from './tracker';
 
-describe( 'Meteor Video Chat client', _ => {
+describe( 'Meteor Video Chat client', () => {
 	const client = new Client({ meteor, video, tracker });
-	it( 'should create the MeteorVideoChat object', _ => {
+
+	it( 'should create the MeteorVideoChat object', () => {
 		assert.isDefined(client);
+
 	});
 });
