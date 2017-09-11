@@ -1,4 +1,7 @@
 sudo: required
 language: node_js
 node_js:
-  - "0.10"
+  - "8"
+script:
+  - npm install
+  - npm test
