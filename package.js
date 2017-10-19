@@ -8,8 +8,9 @@ Package.describe({
 });
 
 Package.onUse(api => {
+
   Npm.depends({
-      "core-rtc":"0.0.2-alpha-5"
+      "core-rtc":"0.0.2-alpha-8"
   });
 
 
@@ -17,7 +18,7 @@ Package.onUse(api => {
   api.use('ecmascript');
   api.use("rocketchat:streamer@0.5.0");
   api.use("mizzao:user-status@0.6.6");
-  api.addFiles(['lib/index.js']);
+  api.addFiles(['lib/index.js'], "client");
   api.addFiles(['lib/publish.js'], "server");
   api.addFiles(['lib/adapter.js'], "client");
 });
