@@ -1,6 +1,12 @@
 import {IHandler, Message, MessageDirection, MessageType} from 'core-rtc';
-import call = Meteor.call;
 export default class Handler implements IHandler {
+    private meteor: any;
+    private core: any;
+    private stream: any;
+    constructor({meteor, core}){
+        this.meteor = meteor;
+        this.core = core;
+    }
     emitIceCandidate(iceCandidate: Object): void {
         this.stream.emit( 'video_message', { candidate: iceCandidate  } );
     }
@@ -14,13 +20,8 @@ export default class Handler implements IHandler {
 
     onCallInitialised(err: Error): void {
     }
-    private meteor: any;
-    private core: any;
-    private stream: any;
-    constructor({meteor, core}){
-        this.meteor = meteor;
-        this.core = core;
-    }
+
+
     call(_id, callback){
         this.meteor.call( 'VideoCallServices/call', _id, callback);
         this.stream = new this.meteor.Streamer( _id );
