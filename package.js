@@ -10,7 +10,7 @@ Package.describe({
 Package.onUse(api => {
 
     Npm.depends({
-        "core-rtc": "0.0.2-alpha-18"
+        "core-rtc": "0.0.2-alpha-20"
     });
 
 
