@@ -8,11 +8,11 @@ export default class Handler implements IHandler {
         this.core = core;
     }
     emitIceCandidate(iceCandidate: Object): void {
-        this.stream.emit( 'video_message', { candidate: iceCandidate  } );
+        this.stream.emit( 'video_message', JSON.stringify({ candidate: iceCandidate  }) );
     }
 
     emitTargetAnswer(sessionDescription: Object): void {
-        this.stream.emit( 'video_message',  { answer:sessionDescription } );
+        this.stream.emit( 'video_message',  JSON.stringify({ answer:sessionDescription }) );
     }
 
     onPeerConnectionCreated(): void {
@@ -23,22 +23,26 @@ export default class Handler implements IHandler {
 
 
     call(_id, callback){
-        this.meteor.call( 'VideoCallServices/call', _id, callback);
-        this.stream = new this.meteor.Streamer( _id );
-        this.stream.on( 'video_message', streamData => {
-            if ( typeof streamData === 'string' ){
-                streamData = JSON.parse( streamData );
-            }
-            if ( streamData.answer ) {
-                const message = {
-                    data:streamData.answer,
-                    Direction:MessageDirection.Sender,
-                    Type:MessageType.SessionDescription
+        this.meteor.call( 'VideoCallServices/call', _id,
+            (err, _id)=>{
+                this.stream = new this.meteor.Streamer( _id );
+                this.stream.on( 'video_message', streamData => {
+                    if ( typeof streamData === 'string' ){
+                        streamData = JSON.parse( streamData );
+                    }
+                    if ( streamData.answer ) {
+                        const message = {
+                            data:streamData.answer,
+                            Direction:MessageDirection.Sender,
+                            Type:MessageType.SessionDescription
 
-                } as Message;
-                this.core.handleSenderStream(message);
-            }
-        });
+                        } as Message;
+                        this.core.handleSenderStream(message);
+                    }
+                });
+                callback();
+            });
+
 
     }
     endPhoneCall(onError){
@@ -56,7 +60,7 @@ export default class Handler implements IHandler {
         } );
     }
     emitSenderDescription(sessionDescription){
-        this.stream.emit( 'video_message',  { offer:sessionDescription }  );
+        this.stream.emit( 'video_message',  JSON.stringify({ offer:sessionDescription } ) );
     }
     onReceivePhoneCall(fields: any){
 
