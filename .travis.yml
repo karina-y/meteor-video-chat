@@ -2,6 +2,6 @@ sudo: required
 language: node_js
 node_js:
   - "8"
-script:
-  - npm test
-  - npm run e2e
+#script:
+#  - npm test
+#  - npm run e2e

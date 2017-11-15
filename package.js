@@ -1,7 +1,7 @@
 //jshint esversion: 6
 Package.describe({
     name: 'elmarti:video-chat',
-    version: '2.0.0',
+    version: '2.0.0-alpha-1',
     summary: 'Simple WebRTC Video Chat for your app.',
     git: 'https://github.com/elmarti/meteor-video-chat',
     documentation: 'README.md'
