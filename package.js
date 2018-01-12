@@ -1,7 +1,7 @@
 //jshint esversion: 6
 Package.describe({
     name: 'elmarti:video-chat',
-    version: '2.0.0-alpha-1',
+    version: '2.0.0',
     summary: 'Simple WebRTC Video Chat for your app.',
     git: 'https://github.com/elmarti/meteor-video-chat',
     documentation: 'README.md'
@@ -10,7 +10,7 @@ Package.describe({
 Package.onUse(api => {
 
     Npm.depends({
-        "core-rtc": "0.0.2-alpha-31"
+        "rtcfly": "0.0.3"
     });
 
 
