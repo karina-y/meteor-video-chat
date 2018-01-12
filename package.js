@@ -10,7 +10,7 @@ Package.describe({
 Package.onUse(api => {
 
     Npm.depends({
-        "rtcfly": "0.0.3"
+        "rtcfly": "0.0.4"
     });
 
 
