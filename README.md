@@ -76,7 +76,13 @@ Meteor.VideoCallServices.onPeerConnectionCreated = () => {
 }
 
 ``` 
+The following method is invoked on the caller browser when the callee rejects the call 
+```
+Meteor.VideoCallServices.onCallRejected = () => {
+    
+}
 
+```
 
 
 The following method is invoked on both the client and server whenever an error is caught.
