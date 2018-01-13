@@ -10,7 +10,7 @@ Package.describe({
 Package.onUse(api => {
 
     Npm.depends({
-        "rtcfly": "0.0.4"
+        "rtcfly": "0.1.1"
     });
 
 
@@ -21,5 +21,4 @@ Package.onUse(api => {
     api.addFiles(['lib/index.js'], "client");
     api.addFiles(['lib/publish.js'], "server");
     api.addFiles(['lib/index.server.js'], 'server');
-    api.addFiles(['lib/adapter.js'], "client");
 });

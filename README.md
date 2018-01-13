@@ -1,5 +1,6 @@
 # Meteor Video Chat
 This extension allows you to implement user-to-user video calling in React, Angular and Blaze.
+This package now uses [RTCFly](https://github.com/rtcfly/rtcfly)
 
 
 [Example](https://meteorvideochat.herokuapp.com) - Try creating 2 user accounts (one incognito) and calling one another. 
@@ -10,42 +11,56 @@ This extension allows you to implement user-to-user video calling in React, Angu
 [![Travis CI](https://travis-ci.org/elmarti/meteor-video-chat.svg?branch=master)](https://travis-ci.org/elmarti/meteor-video-chat)
 [![Maintainability](https://api.codeclimate.com/v1/badges/1ac37840becd7f729338/maintainability)](https://codeclimate.com/github/elmarti/meteor-video-chat/maintainability)
 
-## Configuration
+## init
 Here you can set the [RTCConfiguration](https://developer.mozilla.org/en-US/docs/Web/API/RTCConfiguration). If you are testing outside of a LAN, you'll need to procure some [STUN & TURN](https://gist.github.com/yetithefoot/7592580) servers.
 
 ```
-Meteor.VideoCallServices.RTCConfiguration = [{'iceServers': [{
+Meteor.VideoCallServices.init([{'iceServers': [{
     'urls': 'stun:stun.example.org'
   }]
-}];
+}]);
 ```
 #### Calling a user
-To call a user, call the following method with their _id, the local video element/ react ref and the target video/react ref.
+To call a user, use the following method. 
 ```
-Meteor.VideoCallServices.call(targetUserId, this.refs.caller, this.refs.target);
+Meteor.VideoCallServices.call(ICallParams);
+
 ```
+These are the parameters that can be used: 
+```
+interface ICallParams {
+    id:string; //ID of the callee
+    localElement: IHTMLMediaElement; //local HTMLElement
+    remoteElement: IHTMLMediaElement; //remote HTMLElement
+    video:boolean; //Do you want to show video?
+    audio:boolean; //Do you want to show audio?
+}
+```
+
+
 #### Deciding who can connect to whom
 The follow method can be overridden on the server side to implement some kind of filtering. Returning `false` will cancel the call, and `true` will allow it to go ahead.
+
 ```
 Meteor.VideoCallServices.checkConnect = function(caller, target){
 return *can caller and target call each other"
 };
 ```
 #### Answering a call
-The first step is to handle the onReceivePhoneCall callback and then to accept the call. The answerPhoneCall method accepts the local video and the target video.
+The first step is to handle the onReceiveCall callback and then to accept the call. The answerCall method accepts the ICallParams interfaces, just like the "call" method above
 ```
- Meteor.VideoCallServices.onReceivePhoneCall = (userId) => {
-Meteor.VideoCallServices.answerPhoneCall(this.refs.caller, this.refs.target);
-        };
+ Meteor.VideoCallServices.onReceiveCall = (userId) => {
+        Meteor.VideoCallServices.answerCall(ICallParams);
+ };
 
 ```
-#### Ending phone call
+#### Ending call
 Simply call
 ```
-Meteor.VideoCallServices.endPhoneCall();
+Meteor.VideoCallServices.endCall();
 ```
 #### Other events
-The following method is invoked when the callee accepts the phone call.
+The following method is invoked when the callee accepts the call.
 ```
 Meteor.VideoCallServices.onTargetAccept = () => {
 }
@@ -61,19 +76,14 @@ Meteor.VideoCallServices.onPeerConnectionCreated = () => {
 }
 
 ``` 
-The retry count can but used to limit the amount of reconnection attempts when ICE fails 
-```
-Meteor.VideoCallServices.RetryLimit = 5;  //defaulted to 5
 
-```
 
 
 The following method is invoked on both the client and server whenever an error is caught.
 User is only passed on the server
 
 ```
-Meteor.VideoCallServices.onError = (err, data, user) => {
-}
+Meteor.VideoCallServices.setOnError(callback);
 ```
 The onError section can also be used for handling errors thrown when obtaining the user media (Webcam/audio).
 [See here for more info](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#Exceptions), or checkout the example.
