@@ -3,9 +3,14 @@ This extension allows you to implement user-to-user video calling in React, Angu
 This package now uses [RTCFly](https://github.com/rtcfly/rtcfly)
 
 
-[Example](https://meteorvideochat.herokuapp.com) - Try creating 2 user accounts (one incognito) and calling one another. 
+[Example with React](https://meteorvideochat.herokuapp.com)
 
-[Click here for the example source code.](https://github.com/elmarti/meteor-video-chat-example)
+[Click here for the React example source code.](https://github.com/elmarti/meteor-video-chat-example)
+
+
+[Example with Blaze](https://blazevideochat.herokuapp.com)
+
+[Click here for the Blaze example source code.](https://github.com/elmarti/blaze-video-chat)
 
 [![Stories in Ready](https://badge.waffle.io/elmarti/meteor-video-chat.svg?label=ready&title=Ready)](http://waffle.io/elmarti/meteor-video-chat)
 [![Travis CI](https://travis-ci.org/elmarti/meteor-video-chat.svg?branch=master)](https://travis-ci.org/elmarti/meteor-video-chat)
