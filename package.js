@@ -1,7 +1,7 @@
 //jshint esversion: 6
 Package.describe({
     name: 'elmarti:video-chat',
-    version: '2.0.1',
+    version: '2.1.0',
     summary: 'Simple WebRTC Video Chat for your app.',
     git: 'https://github.com/elmarti/meteor-video-chat',
     documentation: 'README.md'
@@ -10,7 +10,7 @@ Package.describe({
 Package.onUse(api => {
 
     Npm.depends({
-        "rtcfly": "0.1.2"
+        "rtcfly": "0.1.4"
     });
 
 
@@ -21,4 +21,5 @@ Package.onUse(api => {
     api.addFiles(['lib/index.js'], "client");
     api.addFiles(['lib/publish.js'], "server");
     api.addFiles(['lib/index.server.js'], 'server');
+    api.mainModule('lib/index.js', 'client');
 });

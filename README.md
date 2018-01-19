@@ -16,11 +16,17 @@ This package now uses [RTCFly](https://github.com/rtcfly/rtcfly)
 [![Travis CI](https://travis-ci.org/elmarti/meteor-video-chat.svg?branch=master)](https://travis-ci.org/elmarti/meteor-video-chat)
 [![Maintainability](https://api.codeclimate.com/v1/badges/1ac37840becd7f729338/maintainability)](https://codeclimate.com/github/elmarti/meteor-video-chat/maintainability)
 
+## A note on previous versions
+Meteor Video Chat used to use `Meteor.VideoCallServices`, however we have moved to a more modular system, opting for ES6 imports like so: 
+
+`import { VideoCallServices } from 'meteor/elmarti:video-chat';`
+Old style code will be supported for the forseeable future, but we suggest moving over to the new format.
+
 ## init
 Here you can set the [RTCConfiguration](https://developer.mozilla.org/en-US/docs/Web/API/RTCConfiguration). If you are testing outside of a LAN, you'll need to procure some [STUN & TURN](https://gist.github.com/yetithefoot/7592580) servers.
 
 ```
-Meteor.VideoCallServices.init([{'iceServers': [{
+VideoCallServices.init([{'iceServers': [{
     'urls': 'stun:stun.example.org'
   }]
 }]);
@@ -28,7 +34,7 @@ Meteor.VideoCallServices.init([{'iceServers': [{
 #### Calling a user
 To call a user, use the following method. 
 ```
-Meteor.VideoCallServices.call(ICallParams);
+VideoCallServices.call(ICallParams);
 
 ```
 These are the parameters that can be used: 
@@ -47,43 +53,43 @@ interface ICallParams {
 The follow method can be overridden on the server side to implement some kind of filtering. Returning `false` will cancel the call, and `true` will allow it to go ahead.
 
 ```
-Meteor.VideoCallServices.checkConnect = function(caller, target){
+VideoCallServices.checkConnect = function(caller, target){
 return *can caller and target call each other"
 };
 ```
 #### Answering a call
 The first step is to handle the onReceiveCall callback and then to accept the call. The answerCall method accepts the ICallParams interfaces, just like the "call" method above
 ```
- Meteor.VideoCallServices.onReceiveCall = (userId) => {
-        Meteor.VideoCallServices.answerCall(ICallParams);
+ VideoCallServices.onReceiveCall = (userId) => {
+        VideoCallServices.answerCall(ICallParams);
  };
 
 ```
 #### Ending call
 Simply call
 ```
-Meteor.VideoCallServices.endCall();
+VideoCallServices.endCall();
 ```
 #### Other events
 The following method is invoked when the callee accepts the call.
 ```
-Meteor.VideoCallServices.onTargetAccept = () => {
+VideoCallServices.onTargetAccept = () => {
 }
 ```
 The following method is invoked when either user ends the call
 ```
-Meteor.VideoCallServices.onTerminateCall = () => {
+VideoCallServices.onTerminateCall = () => {
 }
 ```
 The following method invoked when the RTCPeerConnection instance has been created, making it possible to consitently mutate it or add a data channel
 ```
-Meteor.VideoCallServices.onPeerConnectionCreated = () => {
+VideoCallServices.onPeerConnectionCreated = () => {
 }
 
 ``` 
 The following method is invoked on the caller browser when the callee rejects the call 
 ```
-Meteor.VideoCallServices.onCallRejected = () => {
+VideoCallServices.onCallRejected = () => {
     
 }
 
@@ -94,7 +100,7 @@ The following method is invoked on both the client and server whenever an error 
 User is only passed on the server
 
 ```
-Meteor.VideoCallServices.setOnError(callback);
+VideoCallServices.setOnError(callback);
 ```
 The onError section can also be used for handling errors thrown when obtaining the user media (Webcam/audio).
 [See here for more info](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#Exceptions), or checkout the example.
