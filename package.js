@@ -21,4 +21,5 @@ Package.onUse(api => {
     api.addFiles(['lib/index.js'], "client");
     api.addFiles(['lib/publish.js'], "server");
     api.addFiles(['lib/index.server.js'], 'server');
+    api.mainModule('lib/index.js', 'client');
 });
