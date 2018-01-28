@@ -26,10 +26,10 @@ Old style code will be supported for the forseeable future, but we suggest movin
 Here you can set the [RTCConfiguration](https://developer.mozilla.org/en-US/docs/Web/API/RTCConfiguration). If you are testing outside of a LAN, you'll need to procure some [STUN & TURN](https://gist.github.com/yetithefoot/7592580) servers.
 
 ```
-VideoCallServices.init([{'iceServers': [{
+VideoCallServices.init({'iceServers': [{
     'urls': 'stun:stun.example.org'
   }]
-}]);
+});
 ```
 #### Calling a user
 To call a user, use the following method. 
