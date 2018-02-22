@@ -10,16 +10,17 @@ Package.describe({
 Package.onUse(api => {
 
     Npm.depends({
-        "rtcfly": "0.1.5"
+        "rtcfly": "0.1.8"
     });
 
 
     api.versionsFrom('1.5');
     api.use('ecmascript');
-    api.use("rocketchat:streamer@0.6.1");
+    api.use("rocketchat:streamer@0.6.2");
     api.use("mizzao:user-status@0.6.7");
     api.addFiles(['lib/index.js'], "client");
     api.addFiles(['lib/publish.js'], "server");
     api.addFiles(['lib/index.server.js'], 'server');
     api.mainModule('lib/index.js', 'client');
+    api.mainModule('lib/server.interface.js', 'server');
 });
