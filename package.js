@@ -1,7 +1,7 @@
 //jshint esversion: 6
 Package.describe({
     name: 'elmarti:video-chat',
-    version: '2.1.3',
+    version: '2.1.4',
     summary: 'Simple WebRTC Video Chat for your app.',
     git: 'https://github.com/elmarti/meteor-video-chat',
     documentation: 'README.md'
@@ -10,13 +10,13 @@ Package.describe({
 Package.onUse(api => {
 
     Npm.depends({
-        "rtcfly": "0.1.5"
+        "rtcfly": "0.1.8"
     });
 
 
     api.versionsFrom('1.5');
     api.use('ecmascript');
-    api.use("rocketchat:streamer@0.6.1");
+    api.use("rocketchat:streamer@0.6.2");
     api.use("mizzao:user-status@0.6.7");
     api.addFiles(['lib/index.js'], "client");
     api.addFiles(['lib/publish.js'], "server");
