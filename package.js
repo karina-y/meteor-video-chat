@@ -16,6 +16,7 @@ Package.onUse(api => {
 
     api.versionsFrom('1.5');
     api.use('ecmascript');
+    api.use('reactive-var');
     api.use("rocketchat:streamer@0.6.2");
     api.use("mizzao:user-status@0.6.7");
     api.addFiles(['lib/index.js'], "client");

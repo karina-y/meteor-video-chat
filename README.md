@@ -76,6 +76,27 @@ VideoCallServices.toggleLocalAudio();
 VideoCallServices.toggleRemoteAudio();
 ```
 
+
+#### Application state
+The following values are stored in a reactive var 
+```
+localMuted:boolean, 
+remoteMuted:boolean, 
+ringing:boolean,
+inProgress:boolean
+
+```
+#### Getting the state 
+```
+VideoCallServices.getState("localMuted");
+
+```
+#### Setting the state 
+```
+VideoCallServices.setState({
+   localMuted:true 
+});
+```
 #### Accessing the video (HTMLMediaElement) elements
 This can be used to do things such as mute 
 ```
