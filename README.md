@@ -57,6 +57,9 @@ VideoCallServices.checkConnect = function(caller, target){
 return *can caller and target call each other"
 };
 ```
+
+
+
 #### Answering a call
 The first step is to handle the onReceiveCall callback and then to accept the call. The answerCall method accepts the ICallParams interfaces, just like the "call" method above
 ```
@@ -64,6 +67,13 @@ The first step is to handle the onReceiveCall callback and then to accept the ca
         VideoCallServices.answerCall(ICallParams);
  };
 
+```
+
+
+#### Muting local or remote videos
+```
+VideoCallServices.toggleLocalAudio();
+VideoCallServices.toggleRemoteAudio();
 ```
 
 #### Accessing the video (HTMLMediaElement) elements
