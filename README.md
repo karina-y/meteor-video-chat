@@ -65,6 +65,16 @@ The first step is to handle the onReceiveCall callback and then to accept the ca
  };
 
 ```
+
+#### Accessing the video (HTMLMediaElement) elements
+This can be used to do things such as mute 
+```
+const localVideo = VideoCallServices.getLocalVideo();
+const remoteVideo = VideoCallServices.getRemoteVideo();
+localVideo.mute = true; 
+
+``
+
 #### Ending call
 Simply call
 ```
