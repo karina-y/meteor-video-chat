@@ -91,18 +91,11 @@ inProgress:boolean
 VideoCallServices.getState("localMuted");
 
 ```
-#### Setting the state 
-```
-VideoCallServices.setState({
-   localMuted:true 
-});
-```
 #### Accessing the video (HTMLMediaElement) elements
-This can be used to do things such as mute 
+
 ```
 const localVideo = VideoCallServices.getLocalVideo();
 const remoteVideo = VideoCallServices.getRemoteVideo();
-localVideo.mute = true; 
 
 ``
 
