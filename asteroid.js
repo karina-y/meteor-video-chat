@@ -1,9 +1,9 @@
 import { VideoCallServices as MeteorClient } from './lib/client';
 import { MeteorVideoChat } from './lib';
 import { client as CoreClient } from 'rtcfly';
+import { AsteroidMeteorStreamerMixin } from './lib/streamer/asteroid';
 
-const AsteroidVideoChatMixin = () => {
-    return {
+const AsteroidVideoChatMixin = {
         init: function() {
             const Meteor = {
                 call: this.call.bind(this),
@@ -24,16 +24,18 @@ const AsteroidVideoChatMixin = () => {
                     return this.state;
                 }
             }
+            AsteroidMeteorStreamerMixin(this, this.ddp);
             this.VideoCallServices = MeteorVideoChat({
                 Meteor,
                 MeteorClient,
                 CoreClient, 
                 Tracker,
                 ReactiveVar,
-                ddp:this.ddp.bind(this.ddp)
+                ddp:this.ddp,
+                Streamer:this.Streamer
             });
         }
-    }
+    
 };
 
 

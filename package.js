@@ -22,6 +22,6 @@ Package.onUse(api => {
     api.addFiles(['meteor.js'], "client");
     api.addFiles(['lib/publish.js'], "server");
     api.addFiles(['lib/index.server.js'], 'server');
-    api.mainModule('meteor.js', 'client');
+    api.mainModule('asteroid.js', 'client');
     api.mainModule('lib/server.interface.js', 'server');
 });

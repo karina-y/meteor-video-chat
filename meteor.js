@@ -14,7 +14,7 @@ const VideoCallServices = MeteorVideoChat({
     CoreClient,
     ReactiveVar,
     ddp:Meteor.connection._stream,
-    streamer:Meteor.Streamer
+    Streamer:Meteor.Streamer
 });
 
 export {
