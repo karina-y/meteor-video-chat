@@ -29,7 +29,11 @@ The Meteor Video Chat client can be used by first running `npm install meteor-vi
 import { AsteroidVideoChatMixin } from 'meteor-video-chat';
 
 ```
+After including this as an Asteroid mixin, as per the Asteroid page, you can access it like so:
+```
+    Asteroid.VideoCallServices;
 
+```
 
 ## init
 Here you can set the [RTCConfiguration](https://developer.mozilla.org/en-US/docs/Web/API/RTCConfiguration). If you are testing outside of a LAN, you'll need to procure some [STUN & TURN](https://gist.github.com/yetithefoot/7592580) servers.
