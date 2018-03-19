@@ -1,6 +1,6 @@
 {
   "name": "meteor-video-chat",
-  "version": "0.0.0-alpha",
+  "version": "0.0.0-alpha-1",
   "description": "NPM package for working with elmarti:meteor-video-chat in other platforms",
   "main": "asteroid.js",
   "scripts": {
