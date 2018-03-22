@@ -19,9 +19,9 @@ Package.onUse(api => {
     api.use('reactive-var');
     api.use("rocketchat:streamer@0.6.2");
     api.use("mizzao:user-status@0.6.7");
-    api.addFiles(['lib/index.js'], "client");
+    api.addFiles(['meteor.js'], "client");
     api.addFiles(['lib/publish.js'], "server");
     api.addFiles(['lib/index.server.js'], 'server');
-    api.mainModule('lib/index.js', 'client');
+    api.mainModule('meteor.js', 'client');
     api.mainModule('lib/server.interface.js', 'server');
 });
