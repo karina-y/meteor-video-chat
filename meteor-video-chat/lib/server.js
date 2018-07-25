@@ -32,6 +32,9 @@ const Services = {
         });
     },
     initializeCallSession(_id, meteorUser) {
+        const oldCalls = CallLog.find({caller: meteorUser._id}).fetch();
+        debugger;
+        const newCalls = CallLog.find({caller: meteorUser._id}).fetch();
         Services.destroyOldCalls(meteorUser);
         const logId = CallLog.insert({
             status: "NEW",
@@ -42,6 +45,7 @@ const Services = {
         streams[logId] = new Meteor.Streamer(logId);
         streams[logId].allowRead('all');
         streams[logId].allowWrite('all');
+	    debugger;
         return logId;
     },
     getUser(){
@@ -58,6 +62,7 @@ const Services = {
      * @param _id {string}
      */
     call(_id, idk) {
+	    debugger;
         check(_id, String);
         //Asteroid sends null as a second param
         check(idk, Match.Maybe(null));
@@ -68,17 +73,21 @@ const Services = {
                 target: _id
             });
             if (inCall) {
+		    debugger;
                 const err = new Meteor.Error(500, "TARGET_IN_CALL", inCall);
                 this.onError(err, inCall, Meteor.userId());
                 throw err;
             }
             else {
+		    debugger;
                 return Services.initializeCallSession.call(this, _id, meteorUser);
             }
         }
         else {
+		debugger;
             Services.connectionNotAllowed(_id, meteorUser);
         }
+	    debugger;
 
     },
     connectionNotAllowed(_id, meteorUser) {
@@ -103,6 +112,7 @@ const Services = {
      * Answer current phone call
      */
     answer() {
+	    debugger;
         const user = Services.getUser();
         const session = CallLog.findOne({
             target: user._id,
@@ -112,6 +122,7 @@ const Services = {
             const err = new Meteor.Error(500, 'SESSION_NOT_FOUND', {
                 target: user._id
             });
+		debugger;
             this.onError(err, undefined, user);
             throw err;
         }
@@ -126,6 +137,7 @@ const Services = {
                 }
             });
         }
+	    debugger;
     },
     /**
      * End current phone call
@@ -152,6 +164,72 @@ const Services = {
                     status: 'FINISHED'
                 }
             }));
+    },
+    /**
+     * Surveil current phone call, the user who calls this will be able to see the target but the target can't see them 0__0
+     */
+    creepinOn(_id) {
+
+    	let log = CallLog.findOne({callerConnectionId: this.connection.id});
+    	let obj = {
+            creepin: "ON",
+            creepee: _id    //the person the creep request is being sent TO
+	};
+
+    	if (!log) {
+    	    log = CallLog.findOne({targetConnectionId: this.connection.id});
+        }
+
+    	if (!log || !log.creeper) {
+            obj.creeper = Meteor.userId();
+	}
+
+        if (log && log.callerConnectionId === this.connection.id) {
+            CallLog.update({
+                target: _id,
+                status: 'ACCEPTED',
+                callerConnectionId: this.connection.id,
+            }, {
+                $set: obj
+            });
+        } else {
+            CallLog.update({
+                caller: _id,
+                status: 'ACCEPTED',
+                targetConnectionId: this.connection.id,
+            }, {
+                $set: obj
+            });
+        }
+    },
+    /**
+     *  reestablish communication
+     */
+    creepinOff(_id) {
+
+        if (CallLog.findOne({callerConnectionId: this.connection.id})) {
+            CallLog.update({
+                target: _id,
+                status: 'ACCEPTED',
+                callerConnectionId: this.connection.id,
+            }, {
+                $set: {
+                    creepin: "OFF",
+                    creepee: _id
+                }
+            });
+        } else {
+            CallLog.update({
+                caller: _id,
+                status: 'ACCEPTED',
+                targetConnectionId: this.connection.id,
+            }, {
+                $set: {
+                    creepin: "OFF",
+                    creepee: _id
+                }
+            });
+        }
     },
     ackReject(id){
         check(id, String)

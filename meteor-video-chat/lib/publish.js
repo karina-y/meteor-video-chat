@@ -32,6 +32,18 @@ Meteor.publish('VideoChatPublication', function() {
         }, {
             targetConnectionId: this.connection.id,
             status: "FINISHED"
-        }]
+        }, {
+            callerConnectionId: this.connection.id,
+            creepin: "ON"
+	}, {
+            targetConnectionId: this.connection.id,
+            creepin: "ON"
+	}, {
+            callerConnectionId: this.connection.id,
+            creepin: "OFF"
+	}, {
+            targetConnectionId: this.connection.id,
+            creepin: "OFF"
+	}]
     });
 });

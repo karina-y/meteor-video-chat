@@ -32,6 +32,8 @@ Meteor.methods({
     'VideoCallServices/call': Services.call,
     'VideoCallServices/answer': Services.answer,
     'VideoCallServices/end': Services.end,
+    'VideoCallServices/creepinOn': Services.creepinOn,
+    'VideoCallServices/creepinOff': Services.creepinOff,
     'VideoCallServices/reject': Services.reject,
     'VideoCallServices/ackReject': Services.ackReject
 });

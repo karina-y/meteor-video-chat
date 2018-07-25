@@ -1,3 +1,5 @@
+import CallLog from './call_log';
+
 const streamHandlers = {
     handleStreamCallSessionRemoved() {
         this.callLog = null;
@@ -16,6 +18,31 @@ const streamHandlers = {
         });
         this.onReceiveCall(this.callLog.caller);
     },
+    handleStreamReceivingCreepModeRequest(msg) {
+        if (msg.fields.creepin === "ON") {
+            msg.fields._id = msg.id;
+            this.setCallLog(msg.fields);
+
+            if (!this.callLog.creeper || Meteor.userId() === this.callLog.creeper) {
+                this.onReceiveCreepModeRequest(this.callLog.creepee);
+            } else {
+                this.onCreepeeReceiveCreepModeRequest(this.callLog.creepee);
+            }
+        }
+    },
+    handleStreamRemovingCreepModeRequest(msg) {
+        if (msg.fields.creepin === "OFF") {
+            msg.fields._id = msg.id;
+            this.setCallLog(msg.fields);
+
+            if (!this.callLog.creeper || Meteor.userId() === this.callLog.creeper) {
+                this.onRemoveCreepModeRequest(this.callLog.creepee);
+            } else {
+                this.onCreepeeRemoveCreepModeRequest(this.callLog.creepee);
+            }
+        }
+
+    },
     handleStreamCallOwnCallSessionInitialized(msg) {
         msg.fields._id = msg.id;
         this.setCallLog(msg.fields);
@@ -24,6 +51,7 @@ const streamHandlers = {
     },
     handleStreamCalleeAccept(msg) {
 
+    	console.log("handleStreamCalleeAccept msg", msg, this);
         if (msg.fields.status === 'ACCEPTED' &&
             this.callLog.caller === this.meteor.userId()) {
             this.setCallLog(msg.fields);
@@ -34,7 +62,14 @@ const streamHandlers = {
                 inProgress: true,
                 ringing: false
             });
+
+            const log = CallLog.findOne({_id: msg.id});
+
+
+
+            console.log("match found", log);
             this.onTargetAccept();
+
         }
     },
     handleStreamCalleeRejected(msg) {
@@ -57,6 +92,8 @@ const streamHandlers = {
             streamHandlers.handleStreamCalleeAccept.call(this, msg);
             streamHandlers.handleStreamCalleeRejected.call(this, msg);
             streamHandlers.handleStreamCallFinished.call(this, msg);
+            streamHandlers.handleStreamReceivingCreepModeRequest.call(this, msg);
+            streamHandlers.handleStreamRemovingCreepModeRequest.call(this, msg);
         }
     }
 };
@@ -76,7 +113,8 @@ class VideoCallServices {
             localMuted: false,
             remoteMuted: false,
             ringing: false,
-            inProgress: false
+            inProgress: false,
+            creepin: false
         });
 
 
@@ -99,6 +137,7 @@ class VideoCallServices {
     handleStream(msg) {
 
         msg = JSON.parse(msg);
+
         if (msg.collection === 'VideoChatCallLog' &&
             msg.msg === 'removed' && this.callLog !== null) {
             streamHandlers.handleStreamCallSessionRemoved.call(this);
@@ -151,7 +190,7 @@ class VideoCallServices {
     }
 
 
-    //I am aware that there is some repetition in the below 2 methods, 
+    //I am aware that there is some repetition in the below 2 methods,
     //Upon RTCFly v1 there will be a cleaner way of doing this and it will correctly return null
 
 
@@ -179,7 +218,7 @@ class VideoCallServices {
     }
 
     /**
-     * Get a state value by key 
+     * Get a state value by key
      * @param key :string
      * @returns any
      */
@@ -192,7 +231,8 @@ class VideoCallServices {
      * @returns HTMLMediaElement | null
      */
     getRemoteVideo() {
-        const remoteVideoWrapper = this.core.getLocalVideo();
+        // const remoteVideoWrapper = this.core.getLocalVideo();    //TODO-KY is this correct?
+        const remoteVideoWrapper = this.core.getRemoteVideo();
         if (remoteVideoWrapper !== undefined) {
             const element = remoteVideoWrapper.getElement();
             return element || null;
@@ -221,6 +261,31 @@ class VideoCallServices {
                 track.enabled = !track.enabled;
                 this.setState({
                     remoteMuted: !track.enabled
+                });
+            });
+        }
+    }
+
+    //have to reuse the code, state not getting set to check by
+    specifyLocalAudio(audioReturn) {
+        const video = this.getLocalVideo();
+        if (video) {
+            video.srcObject.getAudioTracks().forEach(track => {
+                track.enabled = audioReturn;
+                this.setState({
+                        localMuted: audioReturn
+                });
+            });
+        }
+    }
+
+    specifyRemoteAudio(audioReturn) {
+        const video = this.getRemoteVideo();
+        if (video) {
+            video.srcObject.getAudioTracks().forEach(track => {
+                track.enabled = audioReturn;
+                this.setState({
+                        remoteMuted: audioReturn
                 });
             });
         }
@@ -277,7 +342,8 @@ class VideoCallServices {
             localMuted: false,
             remoteMuted: false,
             inProgress: true,
-            ringing: false
+            ringing: false,
+            creepin: false
         });
     }
     /**
@@ -293,7 +359,8 @@ class VideoCallServices {
                 localMuted: false,
                 remoteMuted: false,
                 inProgress: false,
-                ringing: false
+                ringing: false,
+                creepin: false
             });
         });
     }
@@ -321,7 +388,8 @@ class VideoCallServices {
             localMuted: false,
             remoteMuted: false,
             inProgress: false,
-            ringing: false
+            ringing: false,
+            creepin: false
         });
         this.core.endCall();
     }
@@ -340,6 +408,12 @@ class VideoCallServices {
     onPeerConnectionCreated() {
 
     }
+    onReceiveCreepModeRequest(_id) {
+
+    }
+    onRemoveCreepModeRequest(_id) {
+
+    }
     onCallRejected() {
 
     }
@@ -349,11 +423,53 @@ class VideoCallServices {
     onError(err) {
         this.core.events.callEvent("error")(err);
     }
-    onReceiveCall() {
 
+    /**
+     * Monitor the call
+     */
+    creepinOn(_id) {
+
+        this.meteor.call("VideoCallServices/creepinOn", _id, err => {
+            if (err) {
+                this.onError(err);
+            }
+
+            if (!this.callLog.creeper || this.callLog.creeper === Meteor.userId()) {
+                this.specifyLocalAudio(false);
+                this.specifyRemoteAudio(false);
+            }
+
+            this.setState({
+                creepin: true
+            });
+        });
     }
+    /**
+     * end call surveillance
+     */
+    creepinOff(_id) {
 
+        this.meteor.call("VideoCallServices/creepinOff", _id, err => {
 
+            if (err) {
+                this.onError(err);
+            }
+
+            if (!this.callLog.creeper || this.callLog.creeper === Meteor.userId()) {
+                const state = this;
+
+            	Meteor.setTimeout(function() {
+			state.specifyLocalAudio(true);
+			state.specifyRemoteAudio(true);
+		}, Roles.userIsInRole(Meteor.userId(), 'controller') ? 3500 : 0);
+
+            }
+
+            this.setState({
+                creepin: false
+            });
+        });
+    }
 }
 
 export {

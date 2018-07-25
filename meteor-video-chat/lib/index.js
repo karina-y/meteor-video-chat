@@ -52,6 +52,8 @@ export const MeteorVideoChat = ({
         Meteor.VideoCallServices = VideoCallServices;
         core.on('recieveCall', VideoCallServices.onReceiveCall);
         core.on('peerConnectionCreated', VideoCallServices.onPeerConnectionCreated);
+        // core.on('receiveCreepModeRequest', VideoCallServices.onReceiveCreepModeRequest);
+        // core.on('removeCreepModeRequest', VideoCallServices.onRemoveCreepModeRequest);
         Meteor.VideoCallServices.setOnError = function(onError) {
             CoreClient.prototype.onError = onError;
         };
